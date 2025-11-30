@@ -62,4 +62,27 @@ def stt_from_file(audio_path: str):
             return r.recognize_google(audio)
         except Exception as e3:
             print(f"STT Direct Load Error: {e3}")
-            return ""
+            
+            # Fallback 3: Gemini API (Universal Fallback)
+            # This bypasses local ffmpeg entirely by sending the file to Google.
+            try:
+                print("Attempting Gemini STT Fallback...")
+                import google.generativeai as genai
+                
+                api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+                if not api_key:
+                    return ""
+                    
+                genai.configure(api_key=api_key)
+                
+                # Upload file
+                myfile = genai.upload_file(audio_path)
+                
+                # Generate content
+                model = genai.GenerativeModel("gemini-1.5-flash")
+                result = model.generate_content(["Transcribe this audio exactly.", myfile])
+                
+                return result.text.strip()
+            except Exception as e4:
+                print(f"Gemini STT Error: {e4}")
+                return ""
