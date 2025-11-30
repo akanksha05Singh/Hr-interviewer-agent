@@ -35,7 +35,8 @@ if not os.getenv("GOOGLE_API_KEY") and not os.getenv("GEMINI_API_KEY"):
     st.error("CRITICAL: GOOGLE_API_KEY (or GEMINI_API_KEY) not found in .env file. Evaluation will fail.")
     st.stop()
 if not os.getenv("OPENAI_API_KEY"):
-    st.warning("WARNING: OPENAI_API_KEY not found. Embedding similarity will be disabled.")
+    # st.warning("WARNING: OPENAI_API_KEY not found. Embedding similarity will be disabled.")
+    logger.warning("OPENAI_API_KEY not found. Embedding similarity will be disabled.")
 
 MAX_QUESTIONS = 10
 MAX_ATTEMPTS = 2
