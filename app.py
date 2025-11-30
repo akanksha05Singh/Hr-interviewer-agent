@@ -622,10 +622,26 @@ with col1:
                                     os.unlink(tmp_path)
                                     
                                     if transcribed.strip():
-                                        new_attempt_text = transcribed
+                                        # ATOMIC SUBMISSION: Process immediately
                                         st.success(f"Submitted: {transcribed}")
                                         logger.info("received voice draft (manual-submit)")
-                                        # Force rerun to process the submission immediately
+                                        
+                                        # 1. Append to history
+                                        current_q = st.session_state.interview["qa"][-1]
+                                        current_q["attempts"].append({
+                                            "text": transcribed,
+                                            "timestamp": datetime.datetime.now().strftime("%H:%M:%S")
+                                        })
+                                        
+                                        # 2. Evaluate
+                                        eval_res = on_submit_answer(current_q["question"], transcribed, st.session_state.interview["role"])
+                                        current_q["eval"] = eval_res
+                                        
+                                        # 3. Check if passed
+                                        if eval_res.get("status") == "approved":
+                                            st.session_state.trigger_finalize = True
+                                        
+                                        # 4. Force Rerun to show next state
                                         st.rerun()
                                     else:
                                         st.error("Could not hear anything. Please try again.")
