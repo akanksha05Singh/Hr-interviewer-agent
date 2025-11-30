@@ -631,7 +631,6 @@ with col1:
                                         st.success(f"Submitted: {transcribed}")
                                         st.toast("✅ Voice Answer Submitted! Evaluating...", icon="🚀")
                                         logger.info("received voice draft (manual-submit)")
-                                        time.sleep(1) # Brief pause to show success message
                                         
                                         # 1. Append to history (Draft)
                                         current_q = st.session_state.interview["qa"][-1]
@@ -640,12 +639,29 @@ with col1:
                                             "timestamp": datetime.datetime.now().strftime("%H:%M:%S")
                                         })
                                         
-                                        # 2. Trigger Finalization (Reuses main logic)
-                                        # This avoids double-evaluation and ensures consistent flow.
-                                        st.session_state.trigger_finalize = True
-                                        
-                                        # 3. Force Rerun
-                                        st.rerun()
+                                        # 2. DIRECT EVALUATION (No state flag reliance)
+                                        try:
+                                            with st.spinner("Evaluating answer with Gemini 1.5..."):
+                                                # Call Evaluation
+                                                eval_result = on_submit_answer(current_q["question"], transcribed, st.session_state.interview["role"])
+                                                
+                                                # Update State
+                                                current_q["eval"] = eval_result
+                                                current_q["finalized"] = True
+                                                current_q["final_answer"] = transcribed
+                                                
+                                                # Advance Flow
+                                                if len(st.session_state.interview["qa"]) >= MAX_QUESTIONS:
+                                                    st.session_state.finished = True
+                                                else:
+                                                    generate_question()
+                                                
+                                                st.success("Evaluation complete!")
+                                                time.sleep(1)
+                                                st.rerun()
+                                        except Exception as e:
+                                            st.error(f"Evaluation Error: {e}")
+                                            logger.error(f"Evaluation Error: {e}")
                                     else:
                                         st.error("Could not hear anything. Please try again.")
                                 except Exception as e:
