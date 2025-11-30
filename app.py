@@ -625,6 +625,8 @@ with col1:
                                         new_attempt_text = transcribed
                                         st.success(f"Submitted: {transcribed}")
                                         logger.info("received voice draft (manual-submit)")
+                                        # Force rerun to process the submission immediately
+                                        st.rerun()
                                     else:
                                         st.error("Could not hear anything. Please try again.")
                                 except Exception as e:
