@@ -621,23 +621,24 @@ with col1:
                                     transcribed = stt_from_file(tmp_path)
                                     os.unlink(tmp_path)
                                     
-                                    # ATOMIC SUBMISSION: Process immediately
-                                    st.success(f"Submitted: {transcribed}")
-                                    logger.info("received voice draft (manual-submit)")
-                                    
-                                    # 1. Append to history (Draft)
-                                    current_q = st.session_state.interview["qa"][-1]
-                                    current_q["attempts"].append({
-                                        "text": transcribed,
-                                        "timestamp": datetime.datetime.now().strftime("%H:%M:%S")
-                                    })
-                                    
-                                    # 2. Trigger Finalization (Reuses main logic)
-                                    # This avoids double-evaluation and ensures consistent flow.
-                                    st.session_state.trigger_finalize = True
-                                    
-                                    # 3. Force Rerun
-                                    st.rerun()
+                                    if transcribed.strip():
+                                        # ATOMIC SUBMISSION: Process immediately
+                                        st.success(f"Submitted: {transcribed}")
+                                        logger.info("received voice draft (manual-submit)")
+                                        
+                                        # 1. Append to history (Draft)
+                                        current_q = st.session_state.interview["qa"][-1]
+                                        current_q["attempts"].append({
+                                            "text": transcribed,
+                                            "timestamp": datetime.datetime.now().strftime("%H:%M:%S")
+                                        })
+                                        
+                                        # 2. Trigger Finalization (Reuses main logic)
+                                        # This avoids double-evaluation and ensures consistent flow.
+                                        st.session_state.trigger_finalize = True
+                                        
+                                        # 3. Force Rerun
+                                        st.rerun()
                                     else:
                                         st.error("Could not hear anything. Please try again.")
                                 except Exception as e:
