@@ -621,27 +621,22 @@ with col1:
                                     transcribed = stt_from_file(tmp_path)
                                     os.unlink(tmp_path)
                                     
-                                    if transcribed.strip():
                                         # ATOMIC SUBMISSION: Process immediately
                                         st.success(f"Submitted: {transcribed}")
                                         logger.info("received voice draft (manual-submit)")
                                         
-                                        # 1. Append to history
+                                        # 1. Append to history (Draft)
                                         current_q = st.session_state.interview["qa"][-1]
                                         current_q["attempts"].append({
                                             "text": transcribed,
                                             "timestamp": datetime.datetime.now().strftime("%H:%M:%S")
                                         })
                                         
-                                        # 2. Evaluate
-                                        eval_res = on_submit_answer(current_q["question"], transcribed, st.session_state.interview["role"])
-                                        current_q["eval"] = eval_res
+                                        # 2. Trigger Finalization (Reuses main logic)
+                                        # This avoids double-evaluation and ensures consistent flow.
+                                        st.session_state.trigger_finalize = True
                                         
-                                        # 3. Check if passed
-                                        if eval_res.get("status") == "approved":
-                                            st.session_state.trigger_finalize = True
-                                        
-                                        # 4. Force Rerun to show next state
+                                        # 3. Force Rerun
                                         st.rerun()
                                     else:
                                         st.error("Could not hear anything. Please try again.")
