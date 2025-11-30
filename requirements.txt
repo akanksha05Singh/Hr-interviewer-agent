@@ -1,0 +1,16 @@
+streamlit
+openai>=1.0.0
+transformers
+sentence-transformers
+faiss-cpu
+pyttsx3
+soundfile
+librosa
+python-dotenv
+SpeechRecognition
+# Optional but recommended for better local STT
+# openai-whisper
+# whisperx
+duckduckgo-search
+google-genai
+streamlit-autorefresh
