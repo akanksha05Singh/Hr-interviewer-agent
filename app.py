@@ -624,7 +624,9 @@ with col1:
                                     if transcribed.strip():
                                         # ATOMIC SUBMISSION: Process immediately
                                         st.success(f"Submitted: {transcribed}")
+                                        st.toast("✅ Voice Answer Submitted! Evaluating...", icon="🚀")
                                         logger.info("received voice draft (manual-submit)")
+                                        time.sleep(1) # Brief pause to show success message
                                         
                                         # 1. Append to history (Draft)
                                         current_q = st.session_state.interview["qa"][-1]
