@@ -6,7 +6,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+api_key = os.getenv("OPENAI_API_KEY")
+if api_key:
+    client = OpenAI(api_key=api_key)
+else:
+    client = None
+    print("Warning: OPENAI_API_KEY not found. OpenAI features will be disabled.")
 
 def check_moderation(text: str) -> bool:
     """
