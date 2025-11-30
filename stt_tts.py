@@ -36,5 +36,12 @@ def stt_from_file(audio_path: str):
         # If you have internet and want better ASR use r.recognize_google(audio)
         return r.recognize_google(audio)
     except Exception as e:
-        print("STT error:", e)
-        return ""
+        print(f"STT Conversion Error (pydub/ffmpeg): {e}")
+        # Fallback: Try direct load (works if file is already WAV)
+        try:
+            with sr.AudioFile(audio_path) as src:
+                audio = r.record(src)
+            return r.recognize_google(audio)
+        except Exception as e2:
+            print(f"STT Direct Load Error: {e2}")
+            return ""
