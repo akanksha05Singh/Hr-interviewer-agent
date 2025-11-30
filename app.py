@@ -609,29 +609,26 @@ with col1:
                          st.session_state[transcript_key] = ""
 
                     if audio_value:
-                        # 1. Transcribe immediately (Robust)
-                        if st.session_state[transcript_key] == "":
-                            with st.spinner("Transcribing..."):
-                                with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
-                                    audio_value.seek(0)
-                                    tmp.write(audio_value.read())
-                                    tmp_path = tmp.name
-                                
-                                transcribed = stt_from_file(tmp_path)
-                                os.unlink(tmp_path)
-                                st.session_state[transcript_key] = transcribed
-                        
-                        # 2. Show Transcript & Confirm Button
-                        if st.session_state[transcript_key]:
-                            st.info(f"Heard: {st.session_state[transcript_key]}")
-                            
-                            if st.button("✅ Confirm & Submit", key=f"confirm_{transcript_key}"):
-                                new_attempt_text = st.session_state[transcript_key]
-                                logger.info("received voice draft (confirmed)")
-                            
-                            if st.button("🔄 Retry / Clear", key=f"retry_{transcript_key}"):
-                                st.session_state[transcript_key] = ""
-                                st.rerun()
+                        if st.button("Submit Voice Answer", key=f"sub_voice_{transcript_key}"):
+                            with st.spinner("Processing & Transcribing..."):
+                                try:
+                                    with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
+                                        audio_value.seek(0)
+                                        tmp.write(audio_value.read())
+                                        tmp_path = tmp.name
+                                    
+                                    # Transcribe
+                                    transcribed = stt_from_file(tmp_path)
+                                    os.unlink(tmp_path)
+                                    
+                                    if transcribed.strip():
+                                        new_attempt_text = transcribed
+                                        st.success(f"Submitted: {transcribed}")
+                                        logger.info("received voice draft (manual-submit)")
+                                    else:
+                                        st.error("Could not hear anything. Please try again.")
+                                except Exception as e:
+                                    st.error(f"Error processing audio: {e}")
 
                 with tab2:
                     text_input = st.text_area("Type your answer here", key=f"text_{len(st.session_state.interview['qa'])}_{attempts_count}")
