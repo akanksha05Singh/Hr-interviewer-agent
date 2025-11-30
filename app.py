@@ -616,13 +616,12 @@ with col1:
                             transcribed = stt_from_file(tmp_path)
                             os.unlink(tmp_path)
                             st.session_state[transcript_key] = transcribed
-                    
-                    edited_transcript = st.text_area("Edit Transcript", value=st.session_state[transcript_key], key=f"edit_{transcript_key}")
-                    
-                    if st.button("Submit Voice Draft", key=f"sub_voice_{transcript_key}"):
-                        if edited_transcript.strip():
-                            new_attempt_text = edited_transcript
-                            logger.info("received draft")
+                            
+                            # AUTO-SUBMIT: Immediately use the transcript
+                            if transcribed.strip():
+                                new_attempt_text = transcribed
+                                st.success(f"Heard: {transcribed}")
+                                logger.info("received voice draft (auto-submit)")
 
                 with tab2:
                     text_input = st.text_area("Type your answer here", key=f"text_{len(st.session_state.interview['qa'])}_{attempts_count}")
