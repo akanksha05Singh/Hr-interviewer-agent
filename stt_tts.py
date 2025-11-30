@@ -16,8 +16,23 @@ def stt_from_file(audio_path: str):
     # Uses speech_recognition + local recognizer (Sphinx or Google if internet available)
     r = sr.Recognizer()
     try:
-        with sr.AudioFile(audio_path) as src:
+        # Convert to WAV using pydub (handles WebM/Ogg from browser)
+        from pydub import AudioSegment
+        
+        # Load audio (pydub auto-detects format)
+        sound = AudioSegment.from_file(audio_path)
+        
+        # Export as WAV to a new temp file
+        wav_path = audio_path + ".converted.wav"
+        sound.export(wav_path, format="wav")
+        
+        with sr.AudioFile(wav_path) as src:
             audio = r.record(src)
+            
+        # Cleanup converted file
+        if os.path.exists(wav_path):
+            os.remove(wav_path)
+            
         # If you have internet and want better ASR use r.recognize_google(audio)
         return r.recognize_google(audio)
     except Exception as e:
