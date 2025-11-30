@@ -609,19 +609,23 @@ with col1:
                          st.session_state[transcript_key] = ""
 
                     if audio_value:
-                        with st.spinner("Transcribing..."):
-                            with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
-                                tmp.write(audio_value.read())
-                                tmp_path = tmp.name
-                            transcribed = stt_from_file(tmp_path)
-                            os.unlink(tmp_path)
-                            st.session_state[transcript_key] = transcribed
-                            
-                            # AUTO-SUBMIT: Immediately use the transcript
-                            if transcribed.strip():
-                                new_attempt_text = transcribed
-                                st.success(f"Heard: {transcribed}")
-                                logger.info("received voice draft (auto-submit)")
+                        # Manual Submission Flow
+                        if st.button("Submit Voice Answer", key=f"sub_voice_{transcript_key}"):
+                            with st.spinner("Processing audio..."):
+                                with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
+                                    tmp.write(audio_value.read())
+                                    tmp_path = tmp.name
+                                
+                                # Transcribe only when button is clicked
+                                transcribed = stt_from_file(tmp_path)
+                                os.unlink(tmp_path)
+                                
+                                if transcribed.strip():
+                                    new_attempt_text = transcribed
+                                    st.success(f"Processed: {transcribed}")
+                                    logger.info("received voice draft (manual-submit)")
+                                else:
+                                    st.error("Could not hear anything. Please try again.")
 
                 with tab2:
                     text_input = st.text_area("Type your answer here", key=f"text_{len(st.session_state.interview['qa'])}_{attempts_count}")
