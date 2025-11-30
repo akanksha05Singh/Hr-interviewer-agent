@@ -611,14 +611,18 @@ with col1:
                     if audio_value:
                         # Manual Submission Flow
                         if st.button("Submit Voice Answer", key=f"sub_voice_{transcript_key}"):
+                            st.write("DEBUG: Button clicked! Processing...")
                             with st.spinner("Processing audio..."):
                                 with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
+                                    audio_value.seek(0) # Reset stream position
                                     tmp.write(audio_value.read())
                                     tmp_path = tmp.name
                                 
                                 # Transcribe only when button is clicked
                                 transcribed = stt_from_file(tmp_path)
                                 os.unlink(tmp_path)
+                                
+                                st.write(f"DEBUG: Transcribed text: '{transcribed}'")
                                 
                                 if transcribed.strip():
                                     new_attempt_text = transcribed
