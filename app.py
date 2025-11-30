@@ -356,6 +356,11 @@ if "q_start_time" not in st.session_state:
     st.session_state.q_start_time = None
 if "offline_mode" not in st.session_state:
     st.session_state.offline_mode = False
+if "trigger_finalize" not in st.session_state:
+    st.session_state.trigger_finalize = False
+
+# DEBUG STATE
+# st.write(f"DEBUG STATE: trigger_finalize={st.session_state.trigger_finalize}, finished={st.session_state.finished}")
 
 # Inject Anti-Cheat & CSS
 inject_anti_cheat()
