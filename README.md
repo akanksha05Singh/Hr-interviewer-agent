@@ -13,29 +13,35 @@ An AI-powered mock interview agent designed to conduct realistic technical and b
 -   **Vector Store**: Local JSON-based vector store for RAG (Retrieval Augmented Generation)
 -   **Speech**: Browser-based TTS and STT
 
+
 ## 🏗️ System Architecture
 
 ```mermaid
 graph LR
     %% Nodes
     User((👤 Candidate))
-    UI[💻 Web App]
-    Brain{🧠 AI Brain}
+    UI[💻 Streamlit App]
+    Brain{🧠 Orchestrator}
     
     subgraph "Hybrid Intelligence Engine"
+        direction TB
         Gemini[☁️ Gemini 1.5 Flash]
-        RAG[📚 Local Knowledge]
-        Offline[🛡️ Offline Backup]
+        Embed[📐 OpenAI Embeddings]
+        FAISS[📚 FAISS Vector Store]
+        Serp[🌐 SerpAPI Search]
+        Offline[🛡️ Offline Heuristics]
     end
     
-    Report[� Final Report]
+    Report[📄 True Report]
 
     %% Flow
     User ==> UI
     UI ==> Brain
     
-    Brain <==>|Primary| Gemini
-    Brain <-->|Context| RAG
+    Brain <==>|Reasoning| Gemini
+    Brain <-->|Semantic Check| Embed
+    Brain <-->|Retrieval| FAISS
+    Brain <-->|Fact Check| Serp
     Brain -.->|Fallback| Offline
     
     Brain ==> Report
@@ -48,7 +54,7 @@ graph LR
 
     class User,UI,Report white;
     class Brain dark;
-    class Gemini,RAG,Offline blue;
+    class Gemini,Embed,FAISS,Serp,Offline blue;
     
     linkStyle default stroke:#333,stroke-width:2px;
 ```
