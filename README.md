@@ -16,62 +16,39 @@ An AI-powered mock interview agent designed to conduct realistic technical and b
 ## 🏗️ System Architecture
 
 ```mermaid
-graph TD
+graph LR
     %% Nodes
     User((👤 Candidate))
+    UI[💻 Web App]
+    Brain{🧠 AI Brain}
     
-    subgraph "Frontend Layer"
-        UI[💻 Streamlit Interface]
-        Voice[🎤 Voice Input]
-        Text[⌨️ Text Input]
+    subgraph "Hybrid Intelligence Engine"
+        Gemini[☁️ Gemini 1.5 Flash]
+        RAG[📚 Local Knowledge]
+        Offline[🛡️ Offline Backup]
     end
+    
+    Report[� Final Report]
 
-    subgraph "Orchestration Layer"
-        App{⚙️ Application Logic}
-        Router[🔀 Mode Router]
-    end
-
-    subgraph "Intelligence Layer (The Brain)"
-        Gemini[🧠 Gemini 1.5 Flash]
-        Serp[🌐 SerpAPI Web Search]
-        FAISS[📚 FAISS Local KB]
-    end
-
-    subgraph "Evaluation Engine (The Judge)"
-        Scorer[⚖️ Hybrid Scorer]
-        Embed[📐 OpenAI Embeddings]
-        Fallback[🛡️ Offline Heuristics]
-    end
-
-    %% Connections
+    %% Flow
     User ==> UI
-    UI --> Voice & Text
-    Voice & Text ==> App
+    UI ==> Brain
     
-    App --> Router
-    Router ==>|Online Mode| Gemini
-    Router -.->|Offline Mode| Fallback
+    Brain <==>|Primary| Gemini
+    Brain <-->|Context| RAG
+    Brain -.->|Fallback| Offline
     
-    Gemini <-->|Context| FAISS
-    Gemini <-->|Fact Check| Serp
-    
-    Gemini ==>|Generated Q| App
-    
-    App ==> Scorer
-    Scorer --> Gemini
-    Scorer --> Embed
-    
-    Scorer ==>|Final Verdict| UI
+    Brain ==> Report
+    Report ==> UI
 
     %% Styling
-    classDef dark fill:#1a1a1a,stroke:#fff,stroke-width:2px,color:#fff;
-    classDef blue fill:#1565c0,stroke:#fff,stroke-width:2px,color:#fff;
-    classDef white fill:#fff,stroke:#1a1a1a,stroke-width:2px,color:#1a1a1a;
-    classDef accent fill:#00e676,stroke:#1a1a1a,stroke-width:2px,color:#1a1a1a;
+    classDef dark fill:#000,stroke:#fff,stroke-width:2px,color:#fff;
+    classDef blue fill:#0d47a1,stroke:#fff,stroke-width:2px,color:#fff;
+    classDef white fill:#fff,stroke:#000,stroke-width:2px,color:#000;
 
-    class User,UI,Voice,Text white;
-    class App,Router,Scorer,Embed,Fallback dark;
-    class Gemini,Serp,FAISS blue;
+    class User,UI,Report white;
+    class Brain dark;
+    class Gemini,RAG,Offline blue;
     
     linkStyle default stroke:#333,stroke-width:2px;
 ```
