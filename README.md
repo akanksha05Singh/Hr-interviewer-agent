@@ -16,70 +16,22 @@ An AI-powered mock interview agent designed to conduct realistic technical and b
 ## 🏗️ System Architecture
 
 ```mermaid
-graph TD
-    subgraph "User Interface (Streamlit)"
-        Candidate[👤 Candidate]
-        UI[💻 Web App]
-        Voice[🎤 Voice Input]
-        Text[⌨️ Text Input]
-        AntiCheat[🛡️ Anti-Cheat Monitor]
+graph LR
+    User((👤 Candidate)) --> UI[💻 Web Interface]
+    UI <--> App{⚙️ Core Logic}
+    
+    subgraph "Hybrid Intelligence"
+        App <-->|Primary| Gemini[🧠 Gemini 1.5 Flash]
+        App <-->|Context| RAG[📚 Local Knowledge Base]
+        App <-->|Fallback| Offline[�️ Offline Mode]
     end
-
-    subgraph "Orchestration Layer (Python)"
-        App[⚙️ Main App Logic]
-        Session[📝 Session State]
-        Router[🔀 Mode Router]
-    end
-
-    subgraph "The Brain (Hybrid Engine)"
-        direction TB
-        subgraph "Cloud (Primary)"
-            Gemini["🧠 Gemini 1.5 Flash"]
-            Serp["🌐 SerpAPI (Web Search)"]
-        end
-        
-        subgraph "Local (Fallback/RAG)"
-            FAISS["📚 FAISS Vector Store"]
-            LocalBrain["🤖 Local Heuristics"]
-            OfflineQ["📂 Offline Question Bank"]
-        end
-    end
-
-    %% Flows
-    Candidate --> UI
-    UI --> Voice & Text
-    Voice & Text --> App
-    AntiCheat -.->|Alerts| App
     
-    App --> Router
-    
-    %% Online Flow
-    Router -->|Online| Gemini
-    Gemini -->|Generate Q| App
-    Gemini -->|Evaluate A| App
-    
-    %% RAG Flow
-    App -->|Retrieve Context| FAISS
-    App -->|Fact Check| Serp
-    FAISS -->|Context| Gemini
-    Serp -->|Context| Gemini
-    
-    %% Offline Flow
-    Router -->|Offline/Error| LocalBrain
-    LocalBrain -->|Get Q| OfflineQ
-    LocalBrain -->|Score A| App
-    
-    %% Output
-    App -->|Feedback & Score| UI
-    App -->|Final Report| UI
-    
-    classDef cloud fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
-    classDef local fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
-    classDef ui fill:#fff3e0,stroke:#ef6c00,stroke-width:2px;
-    
-    class Gemini,Serp cloud;
-    class FAISS,LocalBrain,OfflineQ local;
-    class UI,Voice,Text,AntiCheat ui;
+    style User fill:#f9f,stroke:#333,stroke-width:2px
+    style UI fill:#fff3e0,stroke:#ef6c00
+    style App fill:#e1f5fe,stroke:#01579b
+    style Gemini fill:#e8f5e9,stroke:#2e7d32
+    style RAG fill:#f3e5f5,stroke:#7b1fa2
+    style Offline fill:#ffebee,stroke:#c62828
 ```
 
 ## 🛠️ Tech Stack
