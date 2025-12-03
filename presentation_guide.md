@@ -26,21 +26,21 @@ You should describe the system as a **Hybrid AI Application** that combines Clou
 ### Architecture Diagram
 ```mermaid
 graph TD
-    User([User]) <--> UI[Streamlit UI\n(Voice/Text)]
+    User([User]) <--> UI[Streamlit UI<br/>(Voice/Text)]
     
     subgraph "Orchestration Engine"
         App[Python App Logic]
-        LocalBrain[Local Brain\n(Backup)]
+        LocalBrain[Local Brain<br/>(Backup)]
     end
     
     subgraph "AI Services (Cloud)"
-        Gemini[Gemini 1.5 Flash\n(Gen/Eval/STT)]
-        OAI[OpenAI Embeddings\n(Similarity)]
+        Gemini[Gemini 1.5 Flash<br/>(Gen/Eval/STT)]
+        OAI[OpenAI Embeddings<br/>(Similarity)]
     end
     
     subgraph "RAG Knowledge Base"
         FAISS[(FAISS Vector DB)]
-        Web[SerpAPI\n(Web Search)]
+        Web[SerpAPI<br/>(Web Search)]
     end
     
     UI <--> App
