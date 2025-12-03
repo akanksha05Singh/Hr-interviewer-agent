@@ -10,36 +10,71 @@ An AI-powered mock interview agent designed to conduct realistic technical and b
     -   **Offline Fallback**: Robust local question bank ensures the interview never gets stuck, even without API access.
 -   **Real-Time Scoring**: Provides immediate feedback, scores (0-10), and pass/fail verdicts.
 -   **Voice & Text Support**: Candidates can speak their answers (transcribed via Speech-to-Text) or type them.
--   **Comprehensive Reporting**: Generates a detailed "True Report" with executive summary, strengths, and hiring recommendation.
--   **Robust Architecture**: Auto-recovery from API failures and "stuck" states.
+-   **Vector Store**: Local JSON-based vector store for RAG (Retrieval Augmented Generation)
+-   **Speech**: Browser-based TTS and STT
 
 ## 🏗️ System Architecture
 
 ```mermaid
-graph LR
-    User((👤 Candidate)) --> UI[💻 Web Interface]
-    UI <--> App{⚙️ Core Logic}
+graph TD
+    %% Nodes
+    User((👤 Candidate))
     
-    subgraph "Hybrid Intelligence"
-        App <-->|Primary| Gemini[🧠 Gemini 1.5 Flash]
-        App <-->|Context| RAG[📚 Local Knowledge Base]
-        App <-->|Fallback| Offline[�️ Offline Mode]
+    subgraph "Frontend Layer"
+        UI[💻 Streamlit Interface]
+        Voice[🎤 Voice Input]
+        Text[⌨️ Text Input]
     end
+
+    subgraph "Orchestration Layer"
+        App{⚙️ Application Logic}
+        Router[🔀 Mode Router]
+    end
+
+    subgraph "Intelligence Layer (The Brain)"
+        Gemini[🧠 Gemini 1.5 Flash]
+        Serp[🌐 SerpAPI Web Search]
+        FAISS[📚 FAISS Local KB]
+    end
+
+    subgraph "Evaluation Engine (The Judge)"
+        Scorer[⚖️ Hybrid Scorer]
+        Embed[📐 OpenAI Embeddings]
+        Fallback[🛡️ Offline Heuristics]
+    end
+
+    %% Connections
+    User ==> UI
+    UI --> Voice & Text
+    Voice & Text ==> App
     
-    style User fill:#f9f,stroke:#333,stroke-width:2px
-    style UI fill:#fff3e0,stroke:#ef6c00
-    style App fill:#e1f5fe,stroke:#01579b
-    style Gemini fill:#e8f5e9,stroke:#2e7d32
-    style RAG fill:#f3e5f5,stroke:#7b1fa2
-    style Offline fill:#ffebee,stroke:#c62828
+    App --> Router
+    Router ==>|Online Mode| Gemini
+    Router -.->|Offline Mode| Fallback
+    
+    Gemini <-->|Context| FAISS
+    Gemini <-->|Fact Check| Serp
+    
+    Gemini ==>|Generated Q| App
+    
+    App ==> Scorer
+    Scorer --> Gemini
+    Scorer --> Embed
+    
+    Scorer ==>|Final Verdict| UI
+
+    %% Styling
+    classDef dark fill:#1a1a1a,stroke:#fff,stroke-width:2px,color:#fff;
+    classDef blue fill:#1565c0,stroke:#fff,stroke-width:2px,color:#fff;
+    classDef white fill:#fff,stroke:#1a1a1a,stroke-width:2px,color:#1a1a1a;
+    classDef accent fill:#00e676,stroke:#1a1a1a,stroke-width:2px,color:#1a1a1a;
+
+    class User,UI,Voice,Text white;
+    class App,Router,Scorer,Embed,Fallback dark;
+    class Gemini,Serp,FAISS blue;
+    
+    linkStyle default stroke:#333,stroke-width:2px;
 ```
-
-## 🛠️ Tech Stack
-
--   **Frontend**: Streamlit
--   **AI Models**: Google Gemini 1.5 Flash (via `google-genai` SDK)
--   **Vector Store**: Local JSON-based vector store for RAG (Retrieval Augmented Generation)
--   **Speech**: Browser-based TTS and STT
 
 ## 🚀 Getting Started
 
