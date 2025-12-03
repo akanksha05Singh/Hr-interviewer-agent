@@ -34,14 +34,14 @@ graph TD
     subgraph "The Brain (Hybrid Engine)"
         direction TB
         subgraph "Cloud (Primary)"
-            Gemini[🧠 Gemini 1.5 Flash]
-            Serp[🌐 SerpAPI (Web Search)]
+            Gemini["🧠 Gemini 1.5 Flash"]
+            Serp["🌐 SerpAPI (Web Search)"]
         end
         
         subgraph "Local (Fallback/RAG)"
-            FAISS[📚 FAISS Vector Store]
-            LocalBrain[🤖 Local Heuristics]
-            OfflineQ[📂 Offline Question Bank]
+            FAISS["📚 FAISS Vector Store"]
+            LocalBrain["🤖 Local Heuristics"]
+            OfflineQ["📂 Offline Question Bank"]
         end
     end
 
